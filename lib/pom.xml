@@ -9,8 +9,12 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-	<artifactId>ibm-mq-poc-mq</artifactId>
+	<artifactId>ibm-mq-poc-lib</artifactId>
 	<packaging>jar</packaging>
+
+    <properties>
+        <version.cxf>3.2.0</version.cxf>
+    </properties>
 
 	<dependencies>
         <dependency>
@@ -28,5 +32,32 @@
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-xjc-plugin</artifactId>
+                <version>${version.cxf}</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xsdtojava</goal>
+                        </goals>
+                        <configuration>
+                            <sourceRoot>${basedir}/target/generated-sources/cxf</sourceRoot>
+                            <xsdOptions>
+                                <xsdOption>
+                                    <xsd>${basedir}/src/main/resources/Payload.xsd</xsd>
+                                    <bindingFile>${basedir}/src/main/resources/bindings.xml</bindingFile>
+                                </xsdOption>
+                            </xsdOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
