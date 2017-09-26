@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified" attributeFormDefault="unqualified" vc:minVersion="1.1">
-	<xs:element name="Payload" type="PayloadType">
-		<xs:annotation>
-			<xs:documentation>Comment describing your root element</xs:documentation>
-		</xs:annotation>
-	</xs:element>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" elementFormDefault="qualified" vc:minVersion="1.1">
+	<xs:element name="Payload" type="PayloadType"/>
 	<xs:complexType name="PayloadType">
 		<xs:sequence>
 			<xs:element name="id" type="xs:long"/>

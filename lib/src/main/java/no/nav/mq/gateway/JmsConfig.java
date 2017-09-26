@@ -1,4 +1,4 @@
-package no.nav.mq.config;
+package no.nav.mq.gateway;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
@@ -7,9 +7,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.jms.JMSException;
 
@@ -78,14 +80,13 @@ public class JmsConfig {
 
     }
 
-    /*
     @Bean
     public PlatformTransactionManager jmsTransactionManager(CachingConnectionFactory cachingConnectionFactory) {
-        JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
+        //JmsTransactionManager jmsTransactionManager = new JmsTransactionManager();
+        JmsTransactionManager jmsTransactionManager = new LoggingTransactionManager();
         jmsTransactionManager.setConnectionFactory(cachingConnectionFactory);
         return jmsTransactionManager;
     }
-    */
 
     @Bean
     public JmsOperations jmsOperations(CachingConnectionFactory cachingConnectionFactory) {

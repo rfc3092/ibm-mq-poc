@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,6 +22,9 @@ public class JmsOperationsTest {
     @Autowired
     private JmsOperations jmsOperations;
 
+    /**
+     * Send and receive a simple {@code String}.
+     */
     @Test
     public void simpleSendAndReceive() {
 
@@ -29,6 +33,9 @@ public class JmsOperationsTest {
 
     }
 
+    /**
+     * Send and receive objects generated from XSD.
+     */
     @Test
     public void complexSendAndReceive() {
 
@@ -52,6 +59,15 @@ public class JmsOperationsTest {
         assertEquals(incomingMessage.getId(), outgoingMessage.getId());
         assertEquals(incomingMessage.getType(), outgoingMessage.getType());
         assertEquals(incomingMessage.getContent(), outgoingMessage.getContent());
+
+    }
+
+    @Test
+    @Transactional(value = "jmsTransactionManager")
+    public void transactionalSendAndReceive() {
+
+        jmsOperations.convertAndSend(QUEUE, MESSAGE);
+        assertEquals(MESSAGE, jmsOperations.receiveAndConvert(QUEUE));
 
     }
 

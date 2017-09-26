@@ -1,4 +1,4 @@
-package no.nav.mq.config;
+package no.nav.mq.gateway;
 
 import generated.MessageType;
 import generated.PayloadType;
@@ -8,12 +8,16 @@ import no.nav.mq.domain.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JmsService {
 
-    @Autowired
-    private JmsOperations jmsOperations;
+    private final JmsOperations jmsOperations;
+
+    public JmsService(@Autowired JmsOperations jmsOperations) {
+        this.jmsOperations = jmsOperations;
+    }
 
     public void send(String queue, Payload payload) {
 
@@ -47,6 +51,12 @@ public class JmsService {
                 )
         );
 
+    }
+
+    @Transactional(value = "jmsTransactionManager")
+    public String transactionalSendAndReceive(String queue, String message) {
+        jmsOperations.convertAndSend(queue, message);
+        return (String) jmsOperations.receiveAndConvert(queue);
     }
 
 }

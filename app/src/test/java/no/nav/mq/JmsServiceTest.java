@@ -1,14 +1,13 @@
 package no.nav.mq;
 
-import no.nav.mq.config.JmsService;
 import no.nav.mq.domain.Message;
 import no.nav.mq.domain.Payload;
 import no.nav.mq.domain.Type;
+import no.nav.mq.gateway.JmsService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -18,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 public class JmsServiceTest {
 
     private static final String QUEUE = "DEV.QUEUE.2";
+    private static final String MESSAGE = "Some message.";
 
     @Autowired
     private JmsService service;
@@ -39,6 +39,11 @@ public class JmsServiceTest {
         assertEquals(outgoingMessage.getType(), incomingMessage.getType());
         assertEquals(outgoingMessage.getContent(), incomingMessage.getContent());
 
+    }
+
+    @Test
+    public void transactionalSendAndReceive() {
+        assertEquals(MESSAGE, service.transactionalSendAndReceive(QUEUE, MESSAGE));
     }
 
 }
