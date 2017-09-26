@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class JmsOperationsTest {
 
-    private static final String QUEUE = "DEV.QUEUE.1";
     private static final String MESSAGE = "Simple message.";
 
     @Autowired
@@ -28,8 +27,8 @@ public class JmsOperationsTest {
     @Test
     public void simpleSendAndReceive() {
 
-        jmsOperations.convertAndSend(QUEUE, MESSAGE);
-        assertEquals(MESSAGE, jmsOperations.receiveAndConvert(QUEUE));
+        jmsOperations.convertAndSend(MESSAGE);
+        assertEquals(MESSAGE, jmsOperations.receiveAndConvert());
 
     }
 
@@ -49,8 +48,8 @@ public class JmsOperationsTest {
         outgoingPayload.setDescription("description");
         outgoingPayload.setMessage(outgoingMessage);
 
-        jmsOperations.convertAndSend(QUEUE, outgoingPayload);
-        PayloadType incomingPayload = (PayloadType) jmsOperations.receiveAndConvert(QUEUE);
+        jmsOperations.convertAndSend(outgoingPayload);
+        PayloadType incomingPayload = (PayloadType) jmsOperations.receiveAndConvert();
 
         assertEquals(outgoingPayload.getId(), incomingPayload.getId());
         assertEquals(outgoingPayload.getDescription(), incomingPayload.getDescription());
@@ -66,8 +65,8 @@ public class JmsOperationsTest {
     @Transactional(value = "jmsTransactionManager")
     public void transactionalSendAndReceive() {
 
-        jmsOperations.convertAndSend(QUEUE, MESSAGE);
-        assertEquals(MESSAGE, jmsOperations.receiveAndConvert(QUEUE));
+        jmsOperations.convertAndSend(MESSAGE);
+        assertEquals(MESSAGE, jmsOperations.receiveAndConvert());
 
     }
 

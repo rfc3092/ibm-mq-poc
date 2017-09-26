@@ -26,11 +26,11 @@
             <artifactId>javax.jms-api</artifactId>
             <version>2.0.1</version>
         </dependency>
-		<dependency>
-			<groupId>com.ibm</groupId>
-			<artifactId>mq.allclient</artifactId>
-			<version>1.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.ibm</groupId>
+            <artifactId>mq.allclient</artifactId>
+            <version>1.0</version>
+        </dependency>
 	</dependencies>
 
     <build>

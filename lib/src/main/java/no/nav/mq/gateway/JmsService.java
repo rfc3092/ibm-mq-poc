@@ -19,7 +19,7 @@ public class JmsService {
         this.jmsOperations = jmsOperations;
     }
 
-    public void send(String queue, Payload payload) {
+    public void send(Payload payload) {
 
         Message message = payload.getMessage();
 
@@ -33,13 +33,13 @@ public class JmsService {
         convertedPayload.setDescription(payload.getDescription().orElse(null));
         convertedPayload.setMessage(convertedMessage);
 
-        jmsOperations.convertAndSend(queue, convertedPayload);
+        jmsOperations.convertAndSend(convertedPayload);
 
     }
 
-    public Payload receive(String queue) {
+    public Payload receive() {
 
-        PayloadType payload = (PayloadType) jmsOperations.receiveAndConvert(queue);
+        PayloadType payload = (PayloadType) jmsOperations.receiveAndConvert();
         MessageType message = payload.getMessage();
         return new Payload(
                 payload.getId(),
@@ -54,9 +54,9 @@ public class JmsService {
     }
 
     @Transactional(value = "jmsTransactionManager")
-    public String transactionalSendAndReceive(String queue, String message) {
-        jmsOperations.convertAndSend(queue, message);
-        return (String) jmsOperations.receiveAndConvert(queue);
+    public String transactionalSendAndReceive(String message) {
+        jmsOperations.convertAndSend(message);
+        return (String) jmsOperations.receiveAndConvert();
     }
 
 }

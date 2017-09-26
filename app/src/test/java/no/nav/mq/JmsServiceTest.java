@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class JmsServiceTest {
 
-    private static final String QUEUE = "DEV.QUEUE.2";
     private static final String MESSAGE = "Some message.";
 
     @Autowired
@@ -28,8 +27,8 @@ public class JmsServiceTest {
         Message outgoingMessage = new Message(1, Type.POSITIVE, "content");
         Payload outgoingPayload = new Payload(1, "description", outgoingMessage);
 
-        service.send(QUEUE, outgoingPayload);
-        Payload incomingPayload = service.receive(QUEUE);
+        service.send(outgoingPayload);
+        Payload incomingPayload = service.receive();
 
         assertEquals(outgoingPayload.getId(), incomingPayload.getId());
         assertEquals(outgoingPayload.getDescription(), incomingPayload.getDescription());
@@ -43,7 +42,7 @@ public class JmsServiceTest {
 
     @Test
     public void transactionalSendAndReceive() {
-        assertEquals(MESSAGE, service.transactionalSendAndReceive(QUEUE, MESSAGE));
+        assertEquals(MESSAGE, service.transactionalSendAndReceive(MESSAGE));
     }
 
 }
