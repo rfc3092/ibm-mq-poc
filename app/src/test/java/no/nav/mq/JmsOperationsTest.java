@@ -4,6 +4,8 @@ import generated.MessageType;
 import generated.PayloadType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsOperations;
@@ -16,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 public class JmsOperationsTest {
 
+    private static final Logger LOG = LoggerFactory.getLogger(JmsOperationsTest.class);
     private static final String MESSAGE = "Simple message.";
 
     @Autowired
@@ -29,6 +32,20 @@ public class JmsOperationsTest {
 
         jmsOperations.convertAndSend(MESSAGE);
         assertEquals(MESSAGE, jmsOperations.receiveAndConvert());
+
+    }
+
+    @Test
+    public void multipleSendAndReceive() {
+
+        for (int i = 1; i < 6; i++) {
+            jmsOperations.convertAndSend("Message #" + i);
+            LOG.info("Sent message " + i);
+        }
+        for (int i = 1; i < 6; i++) {
+            assertEquals("Message #" + i, jmsOperations.receiveAndConvert());
+            LOG.info("Received message " + i);
+        }
 
     }
 
