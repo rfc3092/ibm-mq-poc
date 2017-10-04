@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jms.core.JmsOperations;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +16,13 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class JmsOperationsTest {
+public class TemplateTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JmsOperationsTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TemplateTest.class);
     private static final String MESSAGE = "Simple message.";
 
     @Autowired
-    private JmsOperations jmsOperations;
+    private JmsTemplate template;
 
     /**
      * Send and receive a simple {@code String}.
@@ -30,8 +30,8 @@ public class JmsOperationsTest {
     @Test
     public void simpleSendAndReceive() {
 
-        jmsOperations.convertAndSend(MESSAGE);
-        assertEquals(MESSAGE, jmsOperations.receiveAndConvert());
+        template.convertAndSend(MESSAGE);
+        assertEquals(MESSAGE, template.receiveAndConvert());
 
     }
 
@@ -39,11 +39,11 @@ public class JmsOperationsTest {
     public void multipleSendAndReceive() {
 
         for (int i = 1; i < 6; i++) {
-            jmsOperations.convertAndSend("Message #" + i);
+            template.convertAndSend("Message #" + i);
             LOG.info("Sent message " + i);
         }
         for (int i = 1; i < 6; i++) {
-            assertEquals("Message #" + i, jmsOperations.receiveAndConvert());
+            assertEquals("Message #" + i, template.receiveAndConvert());
             LOG.info("Received message " + i);
         }
 
@@ -65,8 +65,8 @@ public class JmsOperationsTest {
         outgoingPayload.setDescription("description");
         outgoingPayload.setMessage(outgoingMessage);
 
-        jmsOperations.convertAndSend(outgoingPayload);
-        PayloadType incomingPayload = (PayloadType) jmsOperations.receiveAndConvert();
+        template.convertAndSend(outgoingPayload);
+        PayloadType incomingPayload = (PayloadType) template.receiveAndConvert();
 
         assertEquals(outgoingPayload.getId(), incomingPayload.getId());
         assertEquals(outgoingPayload.getDescription(), incomingPayload.getDescription());
@@ -82,8 +82,8 @@ public class JmsOperationsTest {
     @Transactional(value = "jmsTransactionManager")
     public void transactionalSendAndReceive() {
 
-        jmsOperations.convertAndSend(MESSAGE);
-        assertEquals(MESSAGE, jmsOperations.receiveAndConvert());
+        template.convertAndSend(MESSAGE);
+        assertEquals(MESSAGE, template.receiveAndConvert());
 
     }
 

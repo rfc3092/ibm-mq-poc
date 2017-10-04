@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.connection.UserCredentialsConnectionFactoryAdapter;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -93,12 +92,12 @@ public class JmsConfig {
     }
 
     @Bean
-    public JmsOperations jmsOperations(CachingConnectionFactory factory) {
+    public JmsTemplate jmsTemplate(CachingConnectionFactory factory) {
 
-        JmsTemplate jmsTemplate = new JmsTemplate(factory);
-        jmsTemplate.setDefaultDestinationName(queue);
-        jmsTemplate.setReceiveTimeout(receiveTimeout);
-        return jmsTemplate;
+        JmsTemplate template = new JmsTemplate(factory);
+        template.setDefaultDestinationName(queue);
+        template.setReceiveTimeout(receiveTimeout);
+        return template;
 
     }
 

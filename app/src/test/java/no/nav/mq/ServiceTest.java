@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class JmsServiceTest {
+public class ServiceTest {
 
     private static final String MESSAGE = "Some message.";
 
@@ -42,7 +42,9 @@ public class JmsServiceTest {
 
     @Test
     public void transactionalSendAndReceive() {
+
         assertEquals(MESSAGE, service.transactionalSendAndReceive(MESSAGE));
+
     }
 
 }

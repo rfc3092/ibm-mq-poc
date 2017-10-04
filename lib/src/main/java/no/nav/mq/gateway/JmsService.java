@@ -6,20 +6,35 @@ import no.nav.mq.domain.Message;
 import no.nav.mq.domain.Payload;
 import no.nav.mq.domain.Type;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsOperations;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class JmsService {
 
-    private final JmsOperations jmsOperations;
+    private final JmsTemplate template;
 
-    public JmsService(@Autowired JmsOperations jmsOperations) {
-        this.jmsOperations = jmsOperations;
+    @Autowired
+    public JmsService(JmsTemplate template) {
+
+        this.template = template;
+
     }
 
     public void send(Payload payload) {
+
+        template.convertAndSend(convert(payload));
+
+    }
+
+    public Payload receive() {
+
+        return convert((PayloadType) template.receiveAndConvert());
+
+    }
+
+    private static PayloadType convert(Payload payload) {
 
         Message message = payload.getMessage();
 
@@ -33,13 +48,12 @@ public class JmsService {
         convertedPayload.setDescription(payload.getDescription().orElse(null));
         convertedPayload.setMessage(convertedMessage);
 
-        jmsOperations.convertAndSend(convertedPayload);
+        return convertedPayload;
 
     }
 
-    public Payload receive() {
+    private static Payload convert(PayloadType payload) {
 
-        PayloadType payload = (PayloadType) jmsOperations.receiveAndConvert();
         MessageType message = payload.getMessage();
         return new Payload(
                 payload.getId(),
@@ -55,8 +69,10 @@ public class JmsService {
 
     @Transactional(value = "jmsTransactionManager")
     public String transactionalSendAndReceive(String message) {
-        jmsOperations.convertAndSend(message);
-        return (String) jmsOperations.receiveAndConvert();
+
+        template.convertAndSend(message);
+        return (String) template.receiveAndConvert();
+
     }
 
 }
