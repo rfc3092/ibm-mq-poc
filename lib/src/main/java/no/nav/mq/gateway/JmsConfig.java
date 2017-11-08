@@ -2,6 +2,8 @@ package no.nav.mq.gateway;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,8 @@ import javax.jms.JMSException;
 
 @Configuration
 public class JmsConfig {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JmsConfig.class);
 
     @Value("${ibm.mq.host}")
     private String host;
@@ -97,6 +101,27 @@ public class JmsConfig {
         JmsTemplate template = new JmsTemplate(factory);
         template.setDefaultDestinationName(queue);
         template.setReceiveTimeout(receiveTimeout);
+        return purge(template);
+
+    }
+
+    /**
+     * Hack to purge the queue when initializing the service, since we're running tests against an actual MQ instance
+     * and we're putting all sorts of different objects onto the same queue. In a Real World application we wouldn't do
+     * this of course, instead just beginning to consume existing messages.
+     * <br/><br/>
+     * Might be argued that we should do this in a @Before in each test class, but I'm lazy.
+     */
+    private static JmsTemplate purge(JmsTemplate template) {
+
+
+        while (true) {
+            Object o = template.receiveAndConvert();
+            if (o == null) {
+                break;
+            }
+            LOG.warn("Queue wasn't empty, but containted {}", o);
+        }
         return template;
 
     }

@@ -5,7 +5,7 @@
           version="2.1">
 
     <globalBindings>
-        <serializable uid="1"/>
+        <serializable uid="1337"/>
     </globalBindings>
 
 </bindings>
