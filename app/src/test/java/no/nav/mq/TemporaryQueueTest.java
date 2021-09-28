@@ -1,36 +1,35 @@
 package no.nav.mq;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class TemporaryQueueTest {
+class TemporaryQueueTest {
 
     private static final String MESSAGE = "A simple message.";
 
     @Autowired
-    JmsTemplate template;
+    private JmsTemplate template;
 
     @Test
-    public void temporaryQueueSendAndReceive()
+    void temporaryQueueSendAndReceive()
             throws Exception {
 
         new Thread(new ReplyService(template)).start();
 
+        assertNotNull(template.getMessageConverter());
         Message reply = template.sendAndReceive(session -> template.getMessageConverter().toMessage(MESSAGE, session));
+        assertNotNull(reply);
         String replyText = (String) template.getMessageConverter().fromMessage(reply);
 
         assertEquals("Reply to '" + MESSAGE + "'", replyText);
@@ -40,32 +39,29 @@ public class TemporaryQueueTest {
     /**
      * Just a simple "service" that receives messages and replies using the specified (temporary) queue.
      */
-    private static class ReplyService implements Runnable {
-
-        private static final Logger LOG = LoggerFactory.getLogger(ReplyService.class);
-
-        private final JmsTemplate template;
-
-        private ReplyService(JmsTemplate template) {
-
-            this.template = template;
-
-        }
+    @Slf4j
+    private record ReplyService(JmsTemplate template) implements Runnable {
 
         @Override
         public void run() {
 
             try {
-                LOG.info("Waiting");
+                log.info("Waiting");
                 Message message = template.receive();
+                if (message == null) {
+                    return;
+                }
+                if (template.getMessageConverter() == null) {
+                    throw new NullPointerException("Message converter is null");
+                }
                 String contents = (String) template.getMessageConverter().fromMessage(message);
-                LOG.info("Received '{}'", contents);
+                log.info("Received '{}'", contents);
                 Destination replyTo = message.getJMSReplyTo();
-                LOG.info("Replying to (temporary) queue {}", replyTo);
+                log.info("Replying to (temporary) queue {}", replyTo);
                 template.convertAndSend(replyTo, "Reply to '" + contents + "'");
-                LOG.info("Done");
+                log.info("Done");
             } catch (JMSException e) {
-                LOG.error("Failed to complete run", e);
+                log.error("Failed to complete run", e);
             }
 
         }

@@ -5,7 +5,7 @@ public enum Type {
     POSITIVE("positive"),
     NEGATIVE("negative");
 
-    private String text;
+    private final String text;
 
     Type(String text) {
         this.text = text;

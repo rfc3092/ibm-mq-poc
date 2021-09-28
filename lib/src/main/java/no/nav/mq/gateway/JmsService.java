@@ -36,16 +36,16 @@ public class JmsService {
 
     private static PayloadType convert(Payload payload) {
 
-        Message message = payload.getMessage();
+        Message message = payload.message();
 
         MessageType convertedMessage = new MessageType();
-        convertedMessage.setId(message.getId());
-        convertedMessage.setType(message.getType().toString());
-        convertedMessage.setContent(message.getContent());
+        convertedMessage.setId(message.id());
+        convertedMessage.setType(message.type().toString());
+        convertedMessage.setContent(message.content());
 
         PayloadType convertedPayload = new PayloadType();
-        convertedPayload.setId(payload.getId());
-        convertedPayload.setDescription(payload.getDescription().orElse(null));
+        convertedPayload.setId(payload.id());
+        convertedPayload.setDescription(payload.description());
         convertedPayload.setMessage(convertedMessage);
 
         return convertedPayload;
@@ -54,6 +54,9 @@ public class JmsService {
 
     private static Payload convert(PayloadType payload) {
 
+        if (payload == null) {
+            return null;
+        }
         MessageType message = payload.getMessage();
         return new Payload(
                 payload.getId(),

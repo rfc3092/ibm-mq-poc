@@ -1,7 +1,6 @@
 package no.nav.mq.gateway;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
-import com.ibm.msg.client.wmq.WMQConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.jms.JMSException;
+
+import static com.ibm.msg.client.wmq.common.CommonConstants.WMQ_CM_CLIENT;
 
 @Configuration
 public class JmsConfig {
@@ -54,7 +55,7 @@ public class JmsConfig {
 
         MQQueueConnectionFactory factory = new MQQueueConnectionFactory();
         factory.setHostName(host);
-        factory.setTransportType(WMQConstants.WMQ_CM_CLIENT);
+        factory.setTransportType(WMQ_CM_CLIENT);
         factory.setCCSID(ccsid);
         factory.setChannel(channel);
         factory.setPort(port);
@@ -89,7 +90,7 @@ public class JmsConfig {
     @Bean
     public PlatformTransactionManager jmsTransactionManager(CachingConnectionFactory factory) {
 
-        JmsTransactionManager manager = new LoggingTransactionManager(); // new JmsTransactionManager();
+        JmsTransactionManager manager = new LoggingTransactionManager();
         manager.setConnectionFactory(factory);
         return manager;
 

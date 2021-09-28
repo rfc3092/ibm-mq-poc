@@ -4,17 +4,14 @@ import no.nav.mq.domain.Message;
 import no.nav.mq.domain.Payload;
 import no.nav.mq.domain.Type;
 import no.nav.mq.gateway.JmsService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class ServiceTest {
+class ServiceTest {
 
     private static final String MESSAGE = "Some message.";
 
@@ -22,7 +19,7 @@ public class ServiceTest {
     private JmsService service;
 
     @Test
-    public void complexSendAndReceive() {
+    void complexSendAndReceive() {
 
         Message outgoingMessage = new Message(1, Type.POSITIVE, "content");
         Payload outgoingPayload = new Payload(1, "description", outgoingMessage);
@@ -30,21 +27,19 @@ public class ServiceTest {
         service.send(outgoingPayload);
         Payload incomingPayload = service.receive();
 
-        assertEquals(outgoingPayload.getId(), incomingPayload.getId());
-        assertEquals(outgoingPayload.getDescription(), incomingPayload.getDescription());
+        assertEquals(outgoingPayload.id(), incomingPayload.id());
+        assertEquals(outgoingPayload.description(), incomingPayload.description());
 
-        Message incomingMessage = incomingPayload.getMessage();
-        assertEquals(outgoingMessage.getId(), incomingMessage.getId());
-        assertEquals(outgoingMessage.getType(), incomingMessage.getType());
-        assertEquals(outgoingMessage.getContent(), incomingMessage.getContent());
+        Message incomingMessage = incomingPayload.message();
+        assertEquals(outgoingMessage.id(), incomingMessage.id());
+        assertEquals(outgoingMessage.type(), incomingMessage.type());
+        assertEquals(outgoingMessage.content(), incomingMessage.content());
 
     }
 
     @Test
-    public void transactionalSendAndReceive() {
-
+    void transactionalSendAndReceive() {
         assertEquals(MESSAGE, service.transactionalSendAndReceive(MESSAGE));
-
     }
 
 }

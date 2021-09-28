@@ -1,4 +1,5 @@
 target/
+/app/mqjms.log.*
 
 ### STS ###
 .apt_generated
