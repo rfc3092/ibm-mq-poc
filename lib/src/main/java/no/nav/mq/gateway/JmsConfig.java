@@ -1,6 +1,7 @@
 package no.nav.mq.gateway;
 
 import com.ibm.mq.jms.MQQueueConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,8 +51,8 @@ public class JmsConfig {
     private int ccsid;
 
     @Bean
-    public MQQueueConnectionFactory mqQueueConnectionFactory()
-            throws JMSException {
+    UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter()
+        throws JMSException {
 
         MQQueueConnectionFactory factory = new MQQueueConnectionFactory();
         factory.setHostName(host);
@@ -60,12 +61,6 @@ public class JmsConfig {
         factory.setChannel(channel);
         factory.setPort(port);
         factory.setQueueManager(queueManager);
-        return factory;
-
-    }
-
-    @Bean
-    UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter(MQQueueConnectionFactory factory) {
 
         UserCredentialsConnectionFactoryAdapter adapter = new UserCredentialsConnectionFactoryAdapter();
         adapter.setUsername(username);
