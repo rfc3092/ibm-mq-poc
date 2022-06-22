@@ -10,3 +10,12 @@ ibm:
     username: admin
     password: passw0rd
     receive-timeout: 2000
+
+management:
+  endpoint:
+    health:
+      show-details: "ALWAYS"
+  endpoints:
+    web:
+      exposure:
+        include: "*"
