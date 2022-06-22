@@ -51,34 +51,28 @@ public class JmsConfig {
     private int ccsid;
 
     @Bean
-    UserCredentialsConnectionFactoryAdapter userCredentialsConnectionFactoryAdapter()
+    @Primary
+    public CachingConnectionFactory cachingConnectionFactory()
         throws JMSException {
 
-        MQQueueConnectionFactory factory = new MQQueueConnectionFactory();
-        factory.setHostName(host);
-        factory.setTransportType(WMQ_CM_CLIENT);
-        factory.setCCSID(ccsid);
-        factory.setChannel(channel);
-        factory.setPort(port);
-        factory.setQueueManager(queueManager);
+        MQQueueConnectionFactory basicFactory = new MQQueueConnectionFactory();
+        basicFactory.setHostName(host);
+        basicFactory.setTransportType(WMQ_CM_CLIENT);
+        basicFactory.setCCSID(ccsid);
+        basicFactory.setChannel(channel);
+        basicFactory.setPort(port);
+        basicFactory.setQueueManager(queueManager);
 
-        UserCredentialsConnectionFactoryAdapter adapter = new UserCredentialsConnectionFactoryAdapter();
-        adapter.setUsername(username);
-        adapter.setPassword(password);
-        adapter.setTargetConnectionFactory(factory);
-        return adapter;
+        UserCredentialsConnectionFactoryAdapter authFactory = new UserCredentialsConnectionFactoryAdapter();
+        authFactory.setUsername(username);
+        authFactory.setPassword(password);
+        authFactory.setTargetConnectionFactory(basicFactory);
 
-    }
-
-    @Bean
-    @Primary
-    public CachingConnectionFactory cachingConnectionFactory(UserCredentialsConnectionFactoryAdapter adapter) {
-
-        CachingConnectionFactory factory = new CachingConnectionFactory();
-        factory.setTargetConnectionFactory(adapter);
-        factory.setSessionCacheSize(500);
-        factory.setReconnectOnException(true);
-        return factory;
+        CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
+        cachingFactory.setTargetConnectionFactory(authFactory);
+        cachingFactory.setSessionCacheSize(500);
+        cachingFactory.setReconnectOnException(true);
+        return cachingFactory;
 
     }
 
