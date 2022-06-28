@@ -1,5 +1,6 @@
 target/
 /app/mqjms.log.*
+.fleet
 
 ### STS ###
 .apt_generated
